@@ -1,0 +1,36 @@
+exp_name: baseline
+
+data:
+  data_dir: /d/hpc/home/jn16867/ris/data/ris2026-krog1-ucni
+  test_dir: /d/hpc/home/jn16867/ris/data/ris2026-krog1-ucni   # fill in when test set is published
+  csv_path: /d/hpc/home/jn16867/ris/data/ucni_set.csv
+  test_size: 0.2
+  batch_size: 16
+  num_workers: 4
+
+  transform:
+    height: 224
+    width: 224
+
+  augment:
+    hf_prob: 0.5
+    vf_prob: 0.5
+
+model:
+  dropout: 0.3
+
+train:
+  weight_decay: 0.0001
+  patience: 10
+
+  phase1_lr: 0.001
+  phase1_epochs: 15
+
+  phase2_lr: 0.0001
+  phase2_epochs: 50
+
+  checkpoint_path: /d/hpc/home/jn16867/ris/checkpoints/best_model.pth
+  results_dir: /d/hpc/home/jn16867/ris/outputs
+
+test:
+  n_tta: 8

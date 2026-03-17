@@ -1,0 +1,8 @@
+__pycache__
+
+checkpoints
+data/ris2026-krog1-ucni
+data/ucni_set.csv
+logs
+
+*.csv
