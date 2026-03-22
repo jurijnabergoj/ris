@@ -1,0 +1,27 @@
+IMAGE NAME,LABEL
+1c0df1bc.png,Sepi
+206c4173.png,Saur
+31510c38.png,Kpne
+36caa7b4.png,Ecoli
+48ffe3c0.png,Ecoli
+49f66fb7.png,AO
+5a9eb045.png,Efae
+65915cbf.png,AO
+689bfaa9.png,Sepi
+6bbbefd2.png,AO
+7f002d5f.png,Saur
+87caa35d.png,AO
+a960b5c9.png,AO
+b003b496.png,AO
+b40ccdbd.png,Efae
+c1db913b.png,Sepi
+c3e9096c.png,AO
+d0277ace.png,Kpne
+d422aed2.png,Efae
+dad01064.png,Efae
+e9acfe12.png,Efae
+ea55c696.png,AO
+ece0afb8.png,Kpne
+ef599130.png,Kpne
+f26adde4.png,AO
+f59ce17b.png,Sepi
