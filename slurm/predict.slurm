@@ -11,7 +11,7 @@
 # --- environment ---
 module load CUDA/12.1.1
 source ~/.bashrc
-conda activate sam3d-objects
+conda activate ris
 
 # --- safety ---
 set -e

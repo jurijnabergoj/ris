@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=ris-train
+#SBATCH --job-name=ris-convnext
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --time=4:00:00
@@ -26,4 +26,4 @@ cd $PROJECT_ROOT
 export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 
 # --- run ---
-python scripts/train.py --config configs/default.yaml
+python scripts/train.py --config configs/convnext.yaml
