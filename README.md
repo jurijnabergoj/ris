@@ -41,7 +41,7 @@ ris/
 │   ├── ris2026-krog1-ucni/    # Training images
 │   ├── ris2026-krog1-testni/  # Test images
 │   └── ucni_set.csv           # Training labels
-├── checkpoints_mixed/     # Trained model weights
+├── checkpoints/               # Trained model weights
 └── requirements.txt
 ```
 
@@ -80,12 +80,12 @@ This crops 4 training images (`75c8bd04.png`, `3075a94c.png`, `8501bff5.png`, `2
 1 test image (`b40ccdbd.png`) to their left half. These images contain two side-by-side petri
 dishes; only the labelled dish is kept.
 
-> **Note:** If using the provided `checkpoints_mixed/` weights, the training images are already
+> **Note:** If using the provided `checkpoints/` weights, the training images are already
 > in their cropped state — do not run `crop_images.py` again on already-cropped images.
 
 ## Reproducing predictions from pre-trained checkpoints
 
-With the `checkpoints_mixed/` directory in place, run prediction directly:
+With the `checkpoints/` directory in place, run prediction directly:
 
 ```bash
 python scripts/predict.py
@@ -95,7 +95,7 @@ Output is written to `Jur.txt`.
 
 ## Reproducing from scratch (full retraining)
 
-Train EfficientNet-B2 (saves to `checkpoints_mixed/`):
+Train EfficientNet-B2 (saves to `checkpoints/`):
 
 ```bash
 python scripts/train.py --config configs/default.yaml

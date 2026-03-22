@@ -28,7 +28,7 @@ train:
   phase1_epochs: 20
   phase2_lr: 0.0001
   phase2_epochs: 60
-  checkpoint_path: checkpoints_mixed/best_convnext.pth
+  checkpoint_path: checkpoints/best_convnext.pth
 
 test:
   n_tta: 8
