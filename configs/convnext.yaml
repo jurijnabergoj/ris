@@ -1,4 +1,4 @@
-exp_name: baseline
+exp_name: convnext_tiny
 
 data:
   data_dir: data/ris2026-krog1-ucni
@@ -15,7 +15,7 @@ data:
     vf_prob: 0.5
 
 model:
-  arch: efficientnet_b2
+  arch: convnext_tiny
   dropout: 0.3
 
 train:
@@ -28,7 +28,7 @@ train:
   phase1_epochs: 20
   phase2_lr: 0.0001
   phase2_epochs: 60
-  checkpoint_path: checkpoints_mixed/best_model.pth
+  checkpoint_path: checkpoints_mixed/best_convnext.pth
 
 test:
   n_tta: 8
