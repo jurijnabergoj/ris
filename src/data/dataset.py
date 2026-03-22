@@ -5,15 +5,9 @@ from PIL import Image
 
 
 class RisDataset(Dataset):
+    """Dataset for training/validation. Returns transformed tensors ready for model input."""
+
     def __init__(self, data_dir, csv_path, transform=None, augment=None, files=None):
-        """
-        Args:
-            data_dir: directory containing image files
-            csv_path: path to CSV with columns IME_SLIKE, OZNAKA
-            transform: DataTransform instance (Resize → ToTensor → Normalize)
-            augment:   DataAugmentation instance (PIL → PIL); pass None for validation
-            files:     optional explicit list of filenames to use (for train/val splits)
-        """
         self.data_dir = data_dir
         self.transform = transform
         self.augment = augment
@@ -28,8 +22,12 @@ class RisDataset(Dataset):
         if files is not None:
             self.images = sorted(f for f in files if f in labeled_filenames)
         else:
-            self.images = sorted(f for f in os.listdir(data_dir) if f in labeled_filenames)
-        self.labels = [self.class_to_idx[self.filename_to_label[f]] for f in self.images]
+            self.images = sorted(
+                f for f in os.listdir(data_dir) if f in labeled_filenames
+            )
+        self.labels = [
+            self.class_to_idx[self.filename_to_label[f]] for f in self.images
+        ]
 
     def __len__(self):
         return len(self.images)
@@ -39,15 +37,15 @@ class RisDataset(Dataset):
         image = Image.open(os.path.join(self.data_dir, filename)).convert("RGB")
         label = self.class_to_idx[self.filename_to_label[filename]]
 
-        # Augmentation runs on PIL Image, before ToTensor
+        # Run augmentation on PIL image
         if self.augment:
             image = self.augment(image)
-        # Transform: Resize → ToTensor → Normalize
+        # Run transform (resize, to tensor, normalize) after augmentation
         if self.transform:
             image = self.transform(image)
 
         return image, label
-    
+
 
 class TestDataset(Dataset):
     """Returns raw PIL images so augment → transform runs in the correct order during TTA."""

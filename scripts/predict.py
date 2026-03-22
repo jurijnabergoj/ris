@@ -3,45 +3,64 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 
-from configs.utils import load_config
+from configs.utils import load_config, resolve_cfg_paths
 from src.data.dataset import TestDataset, RisDataset
 from src.models.classifier import make_model
-from src.inference.inference import inference, pil_collate
+from src.inference.inference import inference, load_fold_models, pil_collate
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
 
-def prepare_data(cfg):
+def load_data(cfg):
     d = cfg["data"]
 
-    # Load training dataset only to get the class mapping (idx → label string)
+    # Load training dataset to get the idx → label string mapping
     base_dataset = RisDataset(d["data_dir"], d["csv_path"])
     idx_to_class = {v: k for k, v in base_dataset.class_to_idx.items()}
     num_classes = len(base_dataset.classes)
 
     test_dataset = TestDataset(d["test_dir"])
-    # num_workers=0: PIL images can't be shared across worker processes
-    test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False,
-                             num_workers=0, collate_fn=pil_collate)
+    # num_workers=0 because PIL images can't be shared across worker processes
+    test_loader = DataLoader(
+        test_dataset, batch_size=1, shuffle=False, num_workers=0, collate_fn=pil_collate
+    )
 
     return test_loader, idx_to_class, num_classes
 
 
 if __name__ == "__main__":
-    config = load_config(PROJECT_ROOT / "configs" / "default.yaml")
-
-    test_loader, idx_to_class, num_classes = prepare_data(config)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = make_model(config, num_classes=num_classes)
-    model.load_state_dict(torch.load(config["train"]["checkpoint_path"], map_location=device))
-    model.eval()
 
-    predictions = inference(config, model, test_loader, idx_to_class)
+    config = resolve_cfg_paths(load_config(PROJECT_ROOT / "configs" / "default.yaml"))
+    test_loader, idx_to_class, num_classes = load_data(config)
 
-    submission_path = PROJECT_ROOT / "TeamName.csv"
+    arch_configs = [
+        PROJECT_ROOT / "configs" / "default.yaml",  # EfficientNet-B2
+        PROJECT_ROOT / "configs" / "convnext.yaml",  # ConvNeXt-Tiny
+    ]
+    submission_path = PROJECT_ROOT / "Jur.txt"
+
+    all_fold_models = []
+    for config_path in arch_configs:
+        cfg = resolve_cfg_paths(load_config(config_path))
+        model = make_model(cfg, num_classes=num_classes)
+        checkpoint_base = cfg["train"]["checkpoint_path"]
+        fold1_path = checkpoint_base.replace(".pth", "_fold1.pth")
+
+        if not Path(fold1_path).exists():
+            print(
+                f"Skipping {cfg['model']['arch']}: no checkpoints found at {fold1_path}"
+            )
+            continue
+        print(f"\nLoading {cfg['model']['arch']} checkpoints...")
+        all_fold_models.extend(load_fold_models(cfg, model, device))
+
+    print(f"\nEnsemble size: {len(all_fold_models)} models total")
+    predictions = inference(
+        config, None, test_loader, idx_to_class, fold_models=all_fold_models
+    )
+
     with open(submission_path, "w") as f:
-        f.write("IMAGE NAME,LABEL\n")
         for pred in predictions:
             f.write(f"{pred['image_filename']},{pred['predicted_label']}\n")
 
