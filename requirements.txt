@@ -1,0 +1,8 @@
+torch==2.5.1
+torchvision==0.20.1
+pillow==10.4.0
+scikit-learn>=1.4
+PyYAML==6.0.3
+numpy==1.26.4
+pandas==2.3.3
+tqdm==4.67.1
