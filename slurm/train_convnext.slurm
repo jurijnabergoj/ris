@@ -5,8 +5,8 @@
 #SBATCH --time=4:00:00
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=4
-#SBATCH --output=logs/%x_%j.out
-#SBATCH --error=logs/%x_%j.err
+#SBATCH --output=logs/train_convnext/%x_%j.out
+#SBATCH --error=logs/train_convnext/%x_%j.err
 
 # --- environment ---
 module load CUDA/12.1.1

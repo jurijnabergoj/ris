@@ -85,10 +85,7 @@ def inference(cfg, model, test_loader, class_mappings, fold_models=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     n_tta = cfg["test"]["n_tta"]
-    augment = DataAugmentation(
-        hf_prob=cfg["data"]["augment"]["hf_prob"],
-        vf_prob=cfg["data"]["augment"]["vf_prob"],
-    )
+    augment = DataAugmentation(cfg["data"]["augment"])
     transform = DataTransform(
         cfg["data"]["transform"]["height"], cfg["data"]["transform"]["width"]
     )

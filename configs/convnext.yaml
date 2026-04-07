@@ -8,11 +8,21 @@ data:
   batch_size: 16
   num_workers: 4
   transform:
-    height: 224
-    width: 224
+    height: 448
+    width: 448
   augment:
     hf_prob: 0.5
     vf_prob: 0.5
+    rot_deg: 360
+    cj_brightness: 0.8
+    cj_contrast: 0.3
+    cj_saturation: 0.2
+    cj_hue: 0.05
+    raf_degrees: 0
+    raf_scale_x: 0.5
+    raf_scale_y: 1.5
+    gb_kernel_size: 5
+    gb_p: 0.3
 
 model:
   arch: convnext_tiny

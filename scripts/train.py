@@ -45,9 +45,7 @@ if __name__ == "__main__":
     transform = DataTransform(
         config["data"]["transform"]["height"], config["data"]["transform"]["width"]
     )
-    augment = DataAugmentation(
-        config["data"]["augment"]["hf_prob"], config["data"]["augment"]["vf_prob"]
-    )
+    augment = DataAugmentation(config["data"]["augment"])
 
     base_dataset = RisDataset(data_dir, csv_path)
     num_classes = len(base_dataset.classes)
