@@ -4,12 +4,13 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 
-def _mixup_batch(images, labels, num_classes, label_smoothing, alpha=0.4):
+def _mixup_batch(images, features, labels, num_classes, label_smoothing, alpha=0.4):
     """Apply Mixup to a batch. Returns mixed images and soft label targets."""
     lam = float(torch.distributions.Beta(alpha, alpha).sample())
     lam = max(lam, 1.0 - lam)  # keep lam >= 0.5 so the primary label dominates
     perm = torch.randperm(images.size(0), device=images.device)
-    mixed = lam * images + (1.0 - lam) * images[perm]
+    mixed_images = lam * images + (1.0 - lam) * images[perm]
+    mixed_features = lam * features + (1.0 - lam) * features[perm]
 
     eps = label_smoothing
     y_a = F.one_hot(labels, num_classes).float()
@@ -17,7 +18,7 @@ def _mixup_batch(images, labels, num_classes, label_smoothing, alpha=0.4):
 
     soft = lam * y_a + (1.0 - lam) * y_b
     soft = soft * (1.0 - eps) + eps / num_classes
-    return mixed, soft
+    return mixed_images, mixed_features, soft
 
 
 def _soft_cross_entropy(logits, soft_targets):
@@ -45,19 +46,23 @@ def _run_epoch(
 
     ctx = torch.no_grad() if not training else torch.enable_grad()
     with ctx:
-        for images, labels in tqdm(loader, leave=False):
-            images, labels = images.to(device), labels.to(device)
+        for images, feats, labels in tqdm(loader, leave=False):
+            images, feats, labels = (
+                images.to(device),
+                feats.to(device),
+                labels.to(device),
+            )
 
             if training and mixup and images.size(0) > 1:
-                mixed, soft_targets = _mixup_batch(
-                    images, labels, num_classes, label_smoothing
+                mixed_images, mixed_feats, soft_targets = _mixup_batch(
+                    images, feats, labels, num_classes, label_smoothing
                 )
-                logits = model(mixed)
+                logits = model(mixed_images, mixed_feats)
                 loss = _soft_cross_entropy(logits, soft_targets)
                 preds = logits.argmax(dim=1)
                 correct += (preds == labels).sum().item()
             else:
-                logits = model(images)
+                logits = model(images, feats)
                 loss = loss_fn(logits, labels)
                 preds = logits.argmax(dim=1)
                 correct += (preds == labels).sum().item()

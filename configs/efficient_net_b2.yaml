@@ -1,0 +1,47 @@
+exp_name: efficient_net_b2
+
+data:
+  data_dir: data/ris2026-krog1-ucni
+  test_dir: data/ris2026-krog1-testni
+  csv_path: data/ucni_set.csv
+  features_path: data/ris2026-krog1-ucni_colony_features.csv
+  test_features_path: data/ris2026-krog1-testni_colony_features.csv
+  test_size: 0.2
+  batch_size: 16
+  num_workers: 4
+  transform:
+    height: 448
+    width: 448
+  augment:
+    hf_prob: 0.5
+    vf_prob: 0.5
+    rot_deg: 360
+    rrc_size: 448
+    rrc_scale_min: 0.4
+    rrc_scale_max: 1.0
+    cj_brightness: 0.3
+    cj_contrast: 0.3
+    cj_saturation: 0.3
+    cj_hue: 0.05
+    gb_kernel_size: 5
+    gb_p: 0.3
+
+model:
+  arch: efficient_net_b2
+  dropout: 0.3
+  n_extra_features: 6
+
+train:
+  n_splits: 10
+  weight_decay: 0.0001
+  patience: 20
+  label_smoothing: 0.1
+  mixup: true
+  phase1_lr: 0.001
+  phase1_epochs: 20
+  phase2_lr: 0.0001
+  phase2_epochs: 60
+  checkpoint_path: checkpoints/best_efficient_net_b2.pth
+
+test:
+  n_tta: 16

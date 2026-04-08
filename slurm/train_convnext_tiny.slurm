@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=ris-predict
+#SBATCH --job-name=train-convnext_tiny
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --time=4:00:00
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=4
-#SBATCH --output=logs/predict/%x_%j.out
-#SBATCH --error=logs/predict/%x_%j.err
+#SBATCH --output=logs/train_convnext_tiny/%x_%j.out
+#SBATCH --error=logs/train_convnext_tiny/%x_%j.err
 
 # --- environment ---
 module load CUDA/12.1.1
@@ -26,4 +26,4 @@ cd $PROJECT_ROOT
 export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 
 # --- run ---
-python scripts/predict.py
+python scripts/train.py --config configs/convnext_tiny.yaml

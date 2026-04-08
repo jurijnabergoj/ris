@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=ris-convnext
+#SBATCH --job-name=train-efficient_net_b2
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --time=4:00:00
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=4
-#SBATCH --output=logs/train_convnext/%x_%j.out
-#SBATCH --error=logs/train_convnext/%x_%j.err
+#SBATCH --output=logs/train_efficient_net_b2/%x_%j.out
+#SBATCH --error=logs/train_efficient_net_b2/%x_%j.err
 
 # --- environment ---
 module load CUDA/12.1.1
@@ -26,4 +26,4 @@ cd $PROJECT_ROOT
 export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 
 # --- run ---
-python scripts/train.py --config configs/convnext.yaml
+python scripts/train.py --config configs/efficient_net_b2.yaml

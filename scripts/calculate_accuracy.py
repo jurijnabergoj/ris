@@ -20,8 +20,8 @@ def get_accuracy(gt_labels, pred_labels):
     return sum / total
 
 
-gt_labels = load_labels("../resitve_krog1_2026.csv")
-pred_labels = load_labels("../Jur.txt")
+gt_labels = load_labels("resitve_krog1_2026.csv")
+pred_labels = load_labels("Jur.txt")
 
 accuracy = get_accuracy(gt_labels, pred_labels)
 print(f"Accuracy: {accuracy}")

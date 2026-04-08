@@ -13,13 +13,14 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 def load_data(cfg):
     d = cfg["data"]
+    test_features_path = d.get("test_features_path", None)
 
     # Load training dataset to get the idx → label string mapping
     base_dataset = RisDataset(d["data_dir"], d["csv_path"])
     idx_to_class = {v: k for k, v in base_dataset.class_to_idx.items()}
     num_classes = len(base_dataset.classes)
 
-    test_dataset = TestDataset(d["test_dir"])
+    test_dataset = TestDataset(d["test_dir"], features_path=test_features_path)
     # num_workers=0 because PIL images can't be shared across worker processes
     test_loader = DataLoader(
         test_dataset, batch_size=1, shuffle=False, num_workers=0, collate_fn=pil_collate
@@ -31,12 +32,15 @@ def load_data(cfg):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    config = resolve_cfg_paths(load_config(PROJECT_ROOT / "configs" / "default.yaml"))
+    config = resolve_cfg_paths(
+        load_config(PROJECT_ROOT / "configs" / "efficient_net_b2.yaml")
+    )
     test_loader, idx_to_class, num_classes = load_data(config)
 
     arch_configs = [
-        PROJECT_ROOT / "configs" / "default.yaml",  # EfficientNet-B2
-        PROJECT_ROOT / "configs" / "convnext.yaml",  # ConvNeXt-Tiny
+        PROJECT_ROOT / "configs" / "efficient_net_b2.yaml",  # EfficientNet-B2
+        PROJECT_ROOT / "configs" / "convnext_tiny.yaml",  # ConvNeXt-Tiny
+        PROJECT_ROOT / "configs" / "vit_b_16.yaml",  # ViT-b-16
     ]
     submission_path = PROJECT_ROOT / "Jur.txt"
 
@@ -61,6 +65,7 @@ if __name__ == "__main__":
     )
 
     with open(submission_path, "w") as f:
+        f.write("IME_SLIKE,OZNAKA\n")
         for pred in predictions:
             f.write(f"{pred['image_filename']},{pred['predicted_label']}\n")
 

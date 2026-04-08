@@ -8,10 +8,16 @@ class DataAugmentation:
             [
                 transforms.RandomHorizontalFlip(p=augment_cfg["hf_prob"]),
                 transforms.RandomVerticalFlip(p=augment_cfg["vf_prob"]),
+                transforms.RandomResizedCrop(
+                    size=augment_cfg["rrc_size"],
+                    scale=(augment_cfg["rrc_scale_min"], augment_cfg["rrc_scale_max"]),
+                ),
                 transforms.RandomRotation(degrees=augment_cfg["rot_deg"]),
-                transforms.RandomAffine(
-                    degrees=augment_cfg["raf_degrees"],
-                    scale=(augment_cfg["raf_scale_x"], augment_cfg["raf_scale_y"]),
+                transforms.ColorJitter(
+                    brightness=augment_cfg["cj_brightness"],
+                    contrast=augment_cfg["cj_contrast"],
+                    saturation=augment_cfg["cj_saturation"],
+                    hue=augment_cfg["cj_hue"],
                 ),
                 transforms.RandomApply(
                     [transforms.GaussianBlur(augment_cfg["gb_kernel_size"])],

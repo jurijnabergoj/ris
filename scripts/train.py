@@ -27,7 +27,7 @@ def compute_class_weights(dataset: RisDataset) -> torch.Tensor:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="configs/default.yaml")
+    parser.add_argument("--config", default="configs/efficient_net_b2.yaml")
     args = parser.parse_args()
 
     config = resolve_cfg_paths(load_config(PROJECT_ROOT / args.config))
@@ -36,6 +36,7 @@ if __name__ == "__main__":
     csv_path = config["data"]["csv_path"]
     checkpoint_base = config["train"]["checkpoint_path"]
     batch_size = config["data"]["batch_size"]
+    features_path = config["data"].get("features_path", None)
 
     num_workers = config["data"].get("num_workers", 0)
     n_splits = config["train"].get("n_splits", 5)
@@ -65,10 +66,20 @@ if __name__ == "__main__":
         val_files = [base_dataset.images[i] for i in val_idx]
 
         train_dataset = RisDataset(
-            data_dir, csv_path, transform=transform, augment=augment, files=train_files
+            data_dir,
+            csv_path,
+            transform=transform,
+            augment=augment,
+            files=train_files,
+            features_path=features_path,
         )
         val_dataset = RisDataset(
-            data_dir, csv_path, transform=transform, augment=None, files=val_files
+            data_dir,
+            csv_path,
+            transform=transform,
+            augment=None,
+            files=val_files,
+            features_path=features_path,
         )
 
         train_loader = DataLoader(
