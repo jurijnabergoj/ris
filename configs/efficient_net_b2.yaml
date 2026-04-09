@@ -25,6 +25,10 @@ data:
     cj_hue: 0.05
     gb_kernel_size: 5
     gb_p: 0.3
+    cpp_p: 0.5
+    cpp_n_patches: 5
+    cpp_scale_min: 0.03
+    cpp_scale_max: 0.10
 
 model:
   arch: efficient_net_b2

@@ -16,15 +16,34 @@ FEATURE_COLS = [
 ]
 
 
-def _load_features(features_path) -> dict[str, torch.Tensor]:
-    """Load colony features csv -> {filename: feature_tensor}."""
+def _load_features(
+    features_path, norm_stats: dict | None = None
+) -> tuple[dict[str, torch.Tensor], dict]:
+    """Load colony features and normalize.
+
+    If norm_stats is None, computes mean/std from this CSV (use for training data).
+    If norm_stats is provided, applies those stats (use for test data so scale matches training).
+    Returns (feats_dict, norm_stats).
+    """
     df = pd.read_csv(features_path)
-    return {
-        row["filename"]: torch.tensor(
-            row[FEATURE_COLS].values.astype(np.float32), dtype=torch.float32
-        )
-        for _, row in df.iterrows()
+    feat_df = df[FEATURE_COLS].astype(np.float32)
+
+    if norm_stats is None:
+        mean = feat_df.mean()
+        std = feat_df.std().replace(0, 1)
+        norm_stats = {"mean": mean, "std": std}
+    else:
+        mean = norm_stats["mean"]
+        std = norm_stats["std"]
+
+    feat_df = (feat_df - mean) / std
+    feat_df = feat_df.clip(-3.0, 3.0)  # cap extreme OOD values (e.g. late-stage colonies)
+
+    feats_dict = {
+        row["filename"]: torch.tensor(feat_df.loc[i].values, dtype=torch.float32)
+        for i, row in df.iterrows()
     }
+    return feats_dict, norm_stats
 
 
 class RisDataset(Dataset):
@@ -59,7 +78,10 @@ class RisDataset(Dataset):
             self.class_to_idx[self.filename_to_label[f]] for f in self.images
         ]
 
-        self.feats_dict = _load_features(features_path) if features_path else {}
+        if features_path:
+            self.feats_dict, self.norm_stats = _load_features(features_path)
+        else:
+            self.feats_dict, self.norm_stats = {}, None
 
     def __len__(self):
         return len(self.images)
@@ -85,10 +107,13 @@ class RisDataset(Dataset):
 class TestDataset(Dataset):
     """Returns raw PIL images so augment → transform runs in the correct order during TTA."""
 
-    def __init__(self, data_dir, features_path=None):
+    def __init__(self, data_dir, features_path=None, norm_stats=None):
         self.data_dir = data_dir
         self.images = sorted(f for f in os.listdir(data_dir) if f.endswith(".png"))
-        self.feats_dict = _load_features(features_path) if features_path else {}
+        if features_path:
+            self.feats_dict, _ = _load_features(features_path, norm_stats=norm_stats)
+        else:
+            self.feats_dict = {}
 
     def __len__(self):
         return len(self.images)
