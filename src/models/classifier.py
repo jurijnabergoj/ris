@@ -3,6 +3,8 @@ import torch.nn as nn
 from torchvision.models import (
     efficientnet_b2,
     EfficientNet_B2_Weights,
+    efficientnet_b4,
+    EfficientNet_B4_Weights,
     convnext_tiny,
     ConvNeXt_Tiny_Weights,
     vit_b_16,
@@ -41,6 +43,16 @@ class RisClassifier(nn.Module):
 
         if arch == "efficient_net_b2":
             base = efficientnet_b2(weights=EfficientNet_B2_Weights.DEFAULT)
+            in_features = base.classifier[1].in_features
+            # Everything up to (but not including) the final linear
+            self.backbone = nn.Sequential(base.features, base.avgpool, nn.Flatten())
+            self.head = nn.Sequential(
+                nn.Dropout(p=dropout),
+                nn.Linear(in_features + num_extra_features, num_classes),
+            )
+
+        elif arch == "efficient_net_b4":
+            base = efficientnet_b4(weights=EfficientNet_B4_Weights.DEFAULT)
             in_features = base.classifier[1].in_features
             # Everything up to (but not including) the final linear
             self.backbone = nn.Sequential(base.features, base.avgpool, nn.Flatten())

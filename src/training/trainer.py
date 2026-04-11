@@ -136,7 +136,10 @@ def _train_phase(
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             patience_counter = 0
-            torch.save(model.state_dict(), checkpoint_path)
+            torch.save(
+                {"state_dict": model.state_dict(), "best_val_acc": best_val_acc},
+                checkpoint_path,
+            )
             print(f"  -> Best val acc {best_val_acc:.3f} — checkpoint saved")
         else:
             patience_counter += 1
@@ -205,9 +208,9 @@ def train(
     phase1_best_val_acc = (
         max(phase1_results["val_acc"]) if phase1_results["val_acc"] else 0.0
     )
-    model.load_state_dict(
-        torch.load(checkpoint_path, map_location=device, weights_only=True)
-    )
+    _ckpt = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    _state_dict = _ckpt["state_dict"] if isinstance(_ckpt, dict) and "state_dict" in _ckpt else _ckpt
+    model.load_state_dict(_state_dict)
 
     # --- Phase 2: full fine-tune with Mixup ---
     print("\n=== Phase 2: Fine-tuning entire network ===")

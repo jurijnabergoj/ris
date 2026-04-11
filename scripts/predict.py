@@ -47,8 +47,9 @@ if __name__ == "__main__":
 
     arch_configs = [
         PROJECT_ROOT / "configs" / "efficient_net_b2.yaml",  # EfficientNet-B2
+        # PROJECT_ROOT / "configs" / "efficient_net_b4.yaml",  # EfficientNet-B4
         PROJECT_ROOT / "configs" / "convnext_tiny.yaml",  # ConvNeXt-Tiny
-        PROJECT_ROOT / "configs" / "vit_b_16.yaml",  # ViT-b-16
+        # PROJECT_ROOT / "configs" / "vit_b_16.yaml",  # ViT-b-16
     ]
     submission_path = PROJECT_ROOT / "Jur.txt"
 
@@ -64,8 +65,9 @@ if __name__ == "__main__":
                 f"Skipping {cfg['model']['arch']}: no checkpoints found at {fold1_path}"
             )
             continue
-        print(f"\nLoading {cfg['model']['arch']} checkpoints...")
-        all_fold_models.extend(load_fold_models(cfg, model, device))
+        val_acc_threshold = cfg.get("predict", {}).get("val_acc_threshold", 0.0)
+        print(f"\nLoading {cfg['model']['arch']} checkpoints (threshold={val_acc_threshold:.2f})...")
+        all_fold_models.extend(load_fold_models(cfg, model, device, val_acc_threshold=val_acc_threshold))
 
     print(f"\nEnsemble size: {len(all_fold_models)} models total")
     predictions = inference(

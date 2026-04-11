@@ -61,8 +61,13 @@ def _test_phase(n_tta, fold_models, test_loader, softmax_fn, device, class_mappi
     return predictions
 
 
-def load_fold_models(cfg, model, device):
-    """Load all fold checkpoints. Returns a list of (model, augment, transform) tuples."""
+def load_fold_models(cfg, model, device, val_acc_threshold=0.0):
+    """Load fold checkpoints, optionally filtering by best val accuracy.
+
+    Checkpoints may be saved as either a bare state_dict (old format) or a dict
+    with keys 'state_dict' and 'best_val_acc' (new format). Both are handled.
+    Folds whose best_val_acc < val_acc_threshold are skipped.
+    """
     n_splits = cfg["train"].get("n_splits", 5)
     checkpoint_base = cfg["train"]["checkpoint_path"]
     augment = DataAugmentation(cfg["data"]["augment"])
@@ -73,11 +78,26 @@ def load_fold_models(cfg, model, device):
 
     for fold in range(n_splits):
         fold_path = checkpoint_base.replace(".pth", f"_fold{fold + 1}.pth")
+        ckpt = torch.load(fold_path, map_location=device, weights_only=True)
+
+        if isinstance(ckpt, dict) and "state_dict" in ckpt:
+            state_dict = ckpt["state_dict"]
+            best_val_acc = ckpt.get("best_val_acc", 1.0)
+        else:
+            state_dict = ckpt
+            best_val_acc = 1.0  # old checkpoint — assume it passed (no info stored)
+
+        if best_val_acc < val_acc_threshold:
+            print(
+                f"Skipping fold {fold + 1} (val_acc={best_val_acc:.3f} < threshold {val_acc_threshold:.3f}): {fold_path}"
+            )
+            continue
+
         m = copy.deepcopy(model)
-        m.load_state_dict(torch.load(fold_path, map_location=device, weights_only=True))
+        m.load_state_dict(state_dict)
         m.to(device).eval()
         fold_models.append((m, augment, transform))
-        print(f"Loaded fold {fold + 1} checkpoint: {fold_path}")
+        print(f"Loaded fold {fold + 1} checkpoint (val_acc={best_val_acc:.3f}): {fold_path}")
     return fold_models
 
 

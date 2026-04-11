@@ -7,9 +7,9 @@ class DataTransform:
             [
                 transforms.Resize((height, width)),
                 transforms.ToTensor(),
-                transforms.RandomErasing(
-                    p=0.5, scale=(0.05, 0.33), ratio=(0.3, 3.3), value=0
-                ),
+                # transforms.RandomErasing(
+                #     p=0.5, scale=(0.05, 0.33), ratio=(0.3, 3.3), value=0
+                # ),
                 transforms.Normalize(
                     mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
                 ),

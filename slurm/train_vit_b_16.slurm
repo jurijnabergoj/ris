@@ -11,7 +11,7 @@
 # --- environment ---
 module load CUDA/12.1.1
 source ~/.bashrc
-conda activate ris
+source /cvmfs/sling.si/modules/el7/software/Anaconda3/2023.07-2/etc/profile.d/conda.sh && conda activate ris
 
 # --- safety ---
 set -e

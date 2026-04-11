@@ -37,15 +37,30 @@ class DataAugmentation:
                 transforms.RandomHorizontalFlip(p=augment_cfg["hf_prob"]),
                 transforms.RandomVerticalFlip(p=augment_cfg["vf_prob"]),
                 transforms.RandomApply(
-                    [CutPasteColony(
-                        n_patches=augment_cfg.get("cpp_n_patches", 5),
-                        patch_scale=(
-                            augment_cfg.get("cpp_scale_min", 0.03),
-                            augment_cfg.get("cpp_scale_max", 0.10),
-                        ),
-                        p=1.0,
-                    )],
+                    [
+                        CutPasteColony(
+                            n_patches=augment_cfg.get("cpp_n_patches", 5),
+                            patch_scale=(
+                                augment_cfg.get("cpp_scale_min", 0.03),
+                                augment_cfg.get("cpp_scale_max", 0.10),
+                            ),
+                            p=1.0,
+                        )
+                    ],
                     p=augment_cfg.get("cpp_p", 0.5),
+                ),
+                *(
+                    [
+                        transforms.RandomResizedCrop(
+                            size=augment_cfg["rrc_size"],
+                            scale=(
+                                augment_cfg["rrc_scale_min"],
+                                augment_cfg["rrc_scale_max"],
+                            ),
+                        )
+                    ]
+                    if augment_cfg.get("rrc_size")
+                    else []
                 ),
                 transforms.RandomRotation(degrees=augment_cfg["rot_deg"]),
                 transforms.ColorJitter(

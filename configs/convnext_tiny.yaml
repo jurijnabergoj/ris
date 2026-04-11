@@ -49,3 +49,5 @@ train:
 
 test:
   n_tta: 16
+predict:
+  val_acc_threshold: 0.75

@@ -25,7 +25,7 @@ data:
     cj_hue: 0.05
     gb_kernel_size: 5
     gb_p: 0.3
-    cpp_p: 0.5
+    cpp_p: 0.0
     cpp_n_patches: 5
     cpp_scale_min: 0.03
     cpp_scale_max: 0.10
@@ -49,3 +49,5 @@ train:
 
 test:
   n_tta: 16
+predict:
+  val_acc_threshold: 0.75

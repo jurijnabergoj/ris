@@ -1,4 +1,4 @@
-exp_name: vit_b_16
+exp_name: efficient_net_b4
 
 data:
   data_dir: data/ris2026-krog1-ucni
@@ -10,13 +10,13 @@ data:
   batch_size: 16
   num_workers: 4
   transform:
-    height: 224
-    width: 224
+    height: 380
+    width: 380
   augment:
     hf_prob: 0.5
     vf_prob: 0.5
     rot_deg: 360
-    rrc_size: 224
+    rrc_size: 380
     rrc_scale_min: 0.4
     rrc_scale_max: 1.0
     cj_brightness: 0.3
@@ -25,16 +25,13 @@ data:
     cj_hue: 0.05
     gb_kernel_size: 5
     gb_p: 0.3
-    rrc_size: 224
-    rrc_scale_min: 0.4
-    rrc_scale_max: 1.0
     cpp_p: 0.5
     cpp_n_patches: 5
     cpp_scale_min: 0.03
     cpp_scale_max: 0.10
 
 model:
-  arch: vit_b_16
+  arch: efficient_net_b4
   dropout: 0.3
   n_extra_features: 6
 
@@ -48,7 +45,7 @@ train:
   phase1_epochs: 20
   phase2_lr: 0.0001
   phase2_epochs: 60
-  checkpoint_path: checkpoints/best_vit_b_16.pth
+  checkpoint_path: checkpoints/best_efficient_net_b4.pth
 
 test:
   n_tta: 16
