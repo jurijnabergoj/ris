@@ -7,3 +7,5 @@ logs
 
 *.csv
 *.png
+*.npy
+*.pkl
