@@ -45,38 +45,19 @@ config.pkl
 
 ### Retrain from scratch
 
-Open `notebooks/hsi_eda.ipynb` and run cells **FINAL-1 through FINAL-4** in order:
+Open `notebooks/round2_eda.ipynb` and run all cells in order. The final cell trains all models and saves them to `models/round2/`. Configured with:
 
-| Cell | Purpose | Duration |
-|---|---|---|
-| FINAL-1 | Normalization comparison (baseline / fixed / median / trimmed) | ~2 min |
-| FINAL-2 | Sample-weight grid search for 49 hard images | ~5 min |
-| FINAL-3 | Ensemble weight grid search (XGB / LGBM / SVM / MLP) | ~8 min |
-| FINAL-4 | Train all models and save to `models/round2/` | ~3 min |
-
-Edit the config block at the top of FINAL-4 with the best values from FINAL-1/2/3:
-
-```python
-NORM_VARIANT  = 'baseline'   # 'baseline' | 'trimmed' | 'median' | 'fixed'
-SAMPLE_WEIGHT = 0.3          # weight for the 49 hard images
-W_XGB  = 0.4                 # ensemble weights (must sum to 1.0)
-W_LGBM = 0.2
-W_SVM  = 0.1
-W_MLP  = 0.3
-```
 
 ### Project structure (Round 2)
 
 ```
 ris/
 ├── notebooks/
-│   └── hsi_eda.ipynb          # EDA, feature engineering, model development
+│   └── round2_eda.ipynb       # EDA, feature engineering, model development
 ├── scripts/
 │   └── predict_round2.py      # Inference script
 ├── models/
 │   └── round2/                # Saved model files
-├── data/
-│   └── round2/                # Cached feature arrays
 └── README.md
 ```
 
