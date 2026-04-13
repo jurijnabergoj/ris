@@ -2,7 +2,6 @@
 
 Team: **Jur**
 
----
 
 ## Round 2
 
@@ -20,8 +19,9 @@ Input: 3D `.npy` arrays `(H, W, 184)`, wavelengths 452–949 nm, background pixe
 ### Environment
 
 ```bash
+conda create -n ris python=3.10
 conda activate ris
-# dependencies: numpy, scikit-learn, xgboost, lightgbm, scipy, pandas
+pip install -r requirements.txt
 ```
 
 ### Run inference
@@ -45,7 +45,7 @@ config.pkl
 
 ### Retrain from scratch
 
-Open `notebooks/hsi_eda.ipynb` and run cells **FINAL-1 through FINAL-4** in order:
+Open `notebooks/round2_eda.ipynb` and run cells **FINAL-1 through FINAL-4** in order:
 
 | Cell | Purpose | Duration |
 |---|---|---|
